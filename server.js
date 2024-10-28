@@ -12,30 +12,36 @@ app.use(express.json());
 
 app.get("/", (req, res) => {
     res.status(200).json("It's working.😉😎");
-  }); 
+});
 
 async function fetchHtmlContent(url) {
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
 
-    await page.goto(url, { waitUntil: 'networkidle2' });
+    try {
+        await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 }); // Increase timeout
+        await page.waitForSelector('.mirror_link', { timeout: 15000 });
 
-    await page.waitForSelector('.mirror_link', { timeout: 10000 });
-    const downloadLinks = await page.evaluate(() => {
-        const links = {};
-        const downloadDivs = document.querySelectorAll('.mirror_link .dowload a');
-        
-        downloadDivs.forEach(link => {
-            const qualityText = link.textContent.trim().replace(/Download\s*\((.*?)\s*-.*\)/, '$1');
-            const url = link.href;
-            links[qualityText] = url;
+        const downloadLinks = await page.evaluate(() => {
+            const links = {};
+            const downloadDivs = document.querySelectorAll('.mirror_link .dowload a');
+            
+            downloadDivs.forEach(link => {
+                const qualityText = link.textContent.trim().replace(/Download\s*\((.*?)\s*-.*\)/, '$1');
+                const url = link.href;
+                links[qualityText] = url;
+            });
+
+            return links;
         });
 
-        return links;
-    });
-
-    await browser.close();
-    return downloadLinks;
+        return downloadLinks;
+    } catch (error) {
+        console.error('Error during page processing:', error);
+        throw new Error('Failed to fetch content'); // Throw a specific error
+    } finally {
+        await browser.close(); // Ensure browser closes even on error
+    }
 }
 
 router.get('/download', async (req, res) => {
@@ -49,13 +55,13 @@ router.get('/download', async (req, res) => {
         const htmlContent = await fetchHtmlContent(url);
         res.json(htmlContent);
     } catch (error) {
-        console.error('Error fetching HTML:', error);
-        res.status(500).send('Error fetching HTML');
+        console.error('Error fetching HTML:', error.message);
+        res.status(500).send('Error fetching HTML: ' + error.message); // Return specific error message
     }
 });
 
 app.use("/", router);
 
 app.listen(PORT, () => {
-  console.log("Server Started...");
+    console.log("Server Started...");
 });
