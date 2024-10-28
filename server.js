@@ -38,7 +38,7 @@ async function fetchHtmlContent(url) {
     return downloadLinks;
 }
 
-router.get('/download', async (req, res) => {
+router.get('/downid', async (req, res) => {
     const url = req.query.url;
 
     if (!url) {
