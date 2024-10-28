@@ -1,17 +1,18 @@
 const express = require('express');
+const app = express();
+const router = express.Router();
+require("dotenv").config();
 const cors = require('cors');
 const puppeteer = require('puppeteer');
-require("dotenv").config();
 
-const app = express();
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || "5001";
 
 app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
     res.status(200).json("It's working.😉😎");
-}); 
+  }); 
 
 async function fetchHtmlContent(url) {
     const browser = await puppeteer.launch({ headless: true });
@@ -19,16 +20,13 @@ async function fetchHtmlContent(url) {
 
     await page.goto(url, { waitUntil: 'networkidle2' });
 
-    // Wait for the selector before trying to access it
     await page.waitForSelector('.mirror_link', { timeout: 10000 });
-
     const downloadLinks = await page.evaluate(() => {
         const links = {};
         const downloadDivs = document.querySelectorAll('.mirror_link .dowload a');
         
         downloadDivs.forEach(link => {
-            // Modify the regex to extract the desired quality text
-            const qualityText = link.textContent.trim().split(' ').pop(); // Get the last word
+            const qualityText = link.textContent.trim().replace(/Download\s*\((.*?)\s*-.*\)/, '$1');
             const url = link.href;
             links[qualityText] = url;
         });
@@ -40,7 +38,7 @@ async function fetchHtmlContent(url) {
     return downloadLinks;
 }
 
-app.get('/fetch-content', async (req, res) => {
+router.get('/download', async (req, res) => {
     const url = req.query.url;
 
     if (!url) {
@@ -56,6 +54,8 @@ app.get('/fetch-content', async (req, res) => {
     }
 });
 
+app.use("/", router);
+
 app.listen(PORT, () => {
-    console.log(`Server started on port ${PORT}...`);
+  console.log("Server Started...");
 });
