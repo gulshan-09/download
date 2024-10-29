@@ -1,10 +1,13 @@
 const express = require('express');
 const { chromium } = require('playwright');
+const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware to handle CORS
+// Middleware for CORS
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET, POST");
@@ -12,39 +15,34 @@ app.use((req, res, next) => {
     next();
 });
 
-// Fetch HTML route
+// Fetch HTML endpoint
 app.get('/fetch-html', async (req, res) => {
-    const url = 'https://s3taku.com/download?id=MjM2MTM2&typesub=Gogoanime-SUB&title=Tasuuketsu+Episode+16';
     let browser;
 
     try {
-        // Launch a headless browser with additional arguments
+        // Set the Playwright browsers path to Vercel's environment
+        process.env.PLAYWRIGHT_BROWSERS_PATH = path.join(__dirname, 'ms-playwright');
+
+        // Launch a headless browser
         browser = await chromium.launch({
-            headless: true, // Run in headless mode
-            args: ['--no-sandbox', '--disable-setuid-sandbox'] // Necessary args for serverless environments
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
         });
 
         const page = await browser.newPage();
-
-        // Set a longer timeout for page navigation
+        const url = 'https://s3taku.com/download?id=MjM2MTM2&typesub=Gogoanime-SUB&title=Tasuuketsu+Episode+16';
+        
         const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
-        // Check if the response is successful
         if (!response || !response.ok()) {
             throw new Error(`Failed to load the page: ${response ? response.status() : 'No response'}`);
         }
 
-        // Optional: wait for additional content to load (if necessary)
-        await page.waitForTimeout(5000); // Adjust the timeout as necessary
-
-        // Get the full HTML content
-        const content = await page.content();
-
-        // Send the HTML content as response
-        res.send(content);
+        const content = await page.content(); // Get the full HTML content
+        res.send(content); // Send the HTML content as response
     } catch (error) {
-        console.error("Error fetching content:", error.message); // Log the specific error message
-        res.status(500).json({ error: `Error fetching content: ${error.message}` }); // Return detailed error
+        console.error("Error fetching content:", error.message);
+        res.status(500).json({ error: `Error fetching content: ${error.message}` });
     } finally {
         if (browser) await browser.close(); // Ensure the browser is closed
     }
