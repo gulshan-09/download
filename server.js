@@ -1,8 +1,14 @@
-// server.js
 const express = require('express');
 const axios = require('axios');
+const cors = require('cors'); // Import CORS
 const app = express();
-const PORT = 3000; // Change the port if needed
+const PORT = 3000;
+
+// Allow CORS for specific origin
+app.use(cors({
+    origin: 'https://anikoto.fun', // Allow requests only from this origin
+    methods: ['POST', 'GET']
+}));
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
