@@ -1,38 +1,42 @@
 const express = require('express');
-const puppeteer = require('puppeteer-core');
-const chromium = require('@sparticuz/chromium');
+const { Builder } = require('selenium-webdriver');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use((req, res, next) => {
+    // CORS headers
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET, POST");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    next();
+});
+
 app.get('/fetch-html', async (req, res) => {
-    let browser = null;
+    let driver;
     try {
-        browser = await puppeteer.launch({
-            args: chromium.args,
-            executablePath: await chromium.executablePath(),
-            headless: chromium.headless,
-        });
+        // Initialize Selenium WebDriver
+        driver = await new Builder().forBrowser('chrome').build();
+        
+        // Visit the target URL
+        await driver.get('https://s3taku.com/download?id=MjM2MTM2&typesub=Gogoanime-SUB&title=Tasuuketsu+Episode+16');
+        
+        // Wait for a few seconds to allow the page to load
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        
+        // Get the full HTML content
+        const content = await driver.getPageSource();
 
-        const page = await browser.newPage();
-        await page.goto('https://s3taku.com/download?id=MjM2MTM2&typesub=Gogoanime-SUB&title=Tasuuketsu+Episode+16', {
-            waitUntil: 'networkidle2',
-        });
-
-        await page.waitForTimeout(5000); // Wait for 5 seconds
-
-        const content = await page.content();
-        res.json({ content });
+        // Send the HTML content as response
+        res.send(content);
     } catch (error) {
-        console.error("Error:", error);
-        res.status(500).json({ error: error.toString() });
+        console.error("Error fetching content:", error);
+        res.status(500).json({ error: "Error fetching content" });
     } finally {
-        if (browser) await browser.close();
+        if (driver) await driver.quit(); // Ensure the browser is closed
     }
 });
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
-
-module.exports = app;
