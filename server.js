@@ -1,7 +1,19 @@
-// api/download.js
-import puppeteer from 'puppeteer';
+const express = require('express');
+const cors = require('cors');
+const puppeteer = require('puppeteer');
+require("dotenv").config();
 
-export default async function handler(req, res) {
+const app = express();
+const PORT = process.env.PORT || 5001;
+
+app.use(cors());
+app.use(express.json());
+
+app.get("/", (req, res) => {
+    res.status(200).json("It's working.😉😎");
+}); 
+
+async function handler(req, res) {
     if (req.method !== 'GET') {
         return res.status(405).json({ message: 'Method not allowed' });
     }
@@ -42,3 +54,24 @@ export default async function handler(req, res) {
         await browser.close();
     }
 }
+
+
+app.get('/fetch-content', async (req, res) => {
+    const url = req.query.url;
+
+    if (!url) {
+        return res.status(400).send('URL is required');
+    }
+
+    try {
+        const htmlContent = await fetchHtmlContent(url);
+        res.json(htmlContent);
+    } catch (error) {
+        console.error('Error fetching HTML:', error);
+        res.status(500).send('Error fetching HTML');
+    }
+});
+
+app.listen(PORT, () => {
+    console.log(`Server started on port ${PORT}...`);
+});
