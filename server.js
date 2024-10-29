@@ -10,7 +10,7 @@ app.get('/fetch-html', async (req, res) => {
     try {
         // Puppeteer launch configuration with chrome-aws-lambda
         browser = await puppeteer.launch({
-            args: [...chrome.args, '--no-sandbox', '--disable-setuid-sandbox'],
+            args: [...chrome.args, '--disable-gpu', '--no-sandbox', '--disable-setuid-sandbox'],
             executablePath: await chrome.executablePath || '/usr/bin/chromium-browser',
             headless: chrome.headless
         });
