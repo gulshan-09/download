@@ -13,16 +13,7 @@ app.get("/", (req, res) => {
     res.status(200).json("It's working.😉😎");
 }); 
 
-async function handler(req, res) {
-    if (req.method !== 'GET') {
-        return res.status(405).json({ message: 'Method not allowed' });
-    }
-
-    const url = req.query.url;
-    if (!url) {
-        return res.status(400).json({ message: 'URL is required' });
-    }
-
+async function fetchHtmlContent(url) {
     const browser = await puppeteer.launch({
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox'] // Add these args for Vercel
@@ -46,15 +37,14 @@ async function handler(req, res) {
             return links;
         });
 
-        res.status(200).json(downloadLinks);
+        return downloadLinks;
     } catch (error) {
-        console.error('Error fetching HTML:', error);
-        res.status(500).json({ message: 'Error fetching HTML: ' + error.message });
+        console.error('Error during page processing:', error);
+        throw new Error('Failed to fetch content'); // Throw a specific error
     } finally {
-        await browser.close();
+        await browser.close(); // Ensure browser closes even on error
     }
 }
-
 
 app.get('/fetch-content', async (req, res) => {
     const url = req.query.url;
@@ -65,10 +55,10 @@ app.get('/fetch-content', async (req, res) => {
 
     try {
         const htmlContent = await fetchHtmlContent(url);
-        res.json(htmlContent);
+        res.status(200).json(htmlContent);
     } catch (error) {
-        console.error('Error fetching HTML:', error);
-        res.status(500).send('Error fetching HTML');
+        console.error('Error fetching HTML:', error.message);
+        res.status(500).send('Error fetching HTML: ' + error.message);
     }
 });
 
