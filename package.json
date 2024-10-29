@@ -1,18 +1,15 @@
 {
-    "name": "dn",
-    "version": "1.0.0",
-    "description": "",
-    "main": "server.js",
-    "type": "commonjs",
-    "scripts": {
-        "start": "node server.js",
-        "postinstall": "npx playwright install"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "dependencies": {
-        "playwright": "^1.48.2",
-        "express": "^4.21.1"
-    }
+  "name": "project_deployment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "postinstall": "npx playwright install"
+  },
+  "dependencies": {
+    "express": "^4.21.1",
+    "playwright": "^1.48.2",
+    "axios": "^0.21.1"
+  }
 }
