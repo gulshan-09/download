@@ -1,5 +1,5 @@
 const express = require('express');
-const { Builder } = require('selenium-webdriver');
+const { chromium } = require('playwright'); // Use Playwright
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,19 +13,22 @@ app.use((req, res, next) => {
 });
 
 app.get('/fetch-html', async (req, res) => {
-    let driver;
+    let browser;
     try {
-        // Initialize Selenium WebDriver
-        driver = await new Builder().forBrowser('chrome').build();
+        // Launch Playwright browser
+        browser = await chromium.launch({ headless: true }); // Launch in headless mode
+        const page = await browser.newPage();
         
         // Visit the target URL
-        await driver.get('https://s3taku.com/download?id=MjM2MTM2&typesub=Gogoanime-SUB&title=Tasuuketsu+Episode+16');
+        await page.goto('https://s3taku.com/download?id=MjM2MTM2&typesub=Gogoanime-SUB&title=Tasuuketsu+Episode+16', {
+            waitUntil: 'networkidle' // Wait for the page to fully load
+        });
         
-        // Wait for a few seconds to allow the page to load
+        // Optional: delay to ensure additional API data loads
         await new Promise(resolve => setTimeout(resolve, 5000));
         
         // Get the full HTML content
-        const content = await driver.getPageSource();
+        const content = await page.content();
 
         // Send the HTML content as response
         res.send(content);
@@ -33,7 +36,7 @@ app.get('/fetch-html', async (req, res) => {
         console.error("Error fetching content:", error);
         res.status(500).json({ error: "Error fetching content" });
     } finally {
-        if (driver) await driver.quit(); // Ensure the browser is closed
+        if (browser) await browser.close(); // Ensure the browser is closed
     }
 });
 
