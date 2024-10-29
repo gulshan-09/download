@@ -1,6 +1,6 @@
-import express from 'express';
-import puppeteer from 'puppeteer-core';
-import chromium from '@sparticuz/chromium';
+const express = require('express');
+const puppeteer = require('puppeteer-core');
+const chromium = require('@sparticuz/chromium');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -8,7 +8,6 @@ const PORT = process.env.PORT || 3000;
 app.get('/fetch-html', async (req, res) => {
     let browser = null;
     try {
-        // Launch Puppeteer with Sparticuz's Chromium path and args
         browser = await puppeteer.launch({
             args: chromium.args,
             executablePath: await chromium.executablePath(),
@@ -36,4 +35,4 @@ app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
 
-export default app;
+module.exports = app;
