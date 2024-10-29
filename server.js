@@ -16,14 +16,13 @@ app.get("/", (req, res) => {
 async function fetchHtmlContent(url) {
     const browser = await puppeteer.launch({
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'] // Add these args for Vercel
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
     const page = await browser.newPage();
     try {
-        await page.goto(url, { waitUntil: 'networkidle2', timeout: 120000 }); // 120 seconds timeout
-        await page.waitForSelector('.mirror_link', { timeout: 30000 }); // 30 seconds timeout
-
+        await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
+        await page.waitForSelector('.mirror_link', { timeout: 15000 });
 
         const downloadLinks = await page.evaluate(() => {
             const links = {};
@@ -41,11 +40,12 @@ async function fetchHtmlContent(url) {
         return downloadLinks;
     } catch (error) {
         console.error('Error during page processing:', error);
-        throw new Error('Failed to fetch content'); // Throw a specific error
+        throw new Error('Failed to fetch content');
     } finally {
-        await browser.close(); // Ensure browser closes even on error
+        await browser.close();
     }
 }
+
 
 app.get('/fetch-content', async (req, res) => {
     const url = req.query.url;
