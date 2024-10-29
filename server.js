@@ -5,11 +5,7 @@ const app = express();
 const PORT = 3000;
 
 // Set up CORS to allow requests from your specific origin
-app.use(cors({
-    origin: 'https://anikoto.fun', // Allow requests only from this origin
-    methods: ['POST', 'GET'],
-    allowedHeaders: ['Content-Type'] // Allow specific headers if needed
-}));
+app.use(cors());
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
