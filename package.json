@@ -1,20 +1,24 @@
 {
   "name": "dn",
   "version": "1.0.0",
-  "description": "",
+  "description": "A Puppeteer server application",
   "main": "server.js",
   "scripts": {
-    "dev": "vercel dev"
+    "dev": "vercel dev",
+    "start": "node server.js",
+    "postinstall": "npx puppeteer install" // Ensures Chromium is installed
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "chrome": "^0.1.0",
+    "chrome-aws-lambda": "^3.2.0", // Optimized for serverless environments
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "nodemon": "^3.1.7",
-    "puppeteer": "^23.6.0",
-    "express": "^4.21.1"
+    "express": "^4.21.1",
+    "puppeteer": "^23.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7" // For development, not needed in production
   }
 }
