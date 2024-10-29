@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const puppeteer = require('puppeteer');
+const chromium = require('chrome-aws-lambda'); // Use chrome-aws-lambda
 require("dotenv").config();
 
 const app = express();
@@ -14,9 +14,10 @@ app.get("/", (req, res) => {
 }); 
 
 async function fetchHtmlContent(url) {
-    const browser = await puppeteer.launch({
+    const browser = await chromium.puppeteer.launch({
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox'],
+        defaultViewport: chromium.defaultViewport,
     });
 
     const page = await browser.newPage();
