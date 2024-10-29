@@ -21,8 +21,9 @@ async function fetchHtmlContent(url) {
 
     const page = await browser.newPage();
     try {
-        await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
-        await page.waitForSelector('.mirror_link', { timeout: 15000 });
+        await page.goto(url, { waitUntil: 'networkidle2', timeout: 120000 }); // 120 seconds timeout
+        await page.waitForSelector('.mirror_link', { timeout: 30000 }); // 30 seconds timeout
+
 
         const downloadLinks = await page.evaluate(() => {
             const links = {};
