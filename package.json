@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "selenium-webdriver": "^4.25.0",
+    "playwright": "^1.48.2",
     "puppeteer-core": "^10.4.0",
     "express": "^4.21.1"
   }
