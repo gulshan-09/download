@@ -3,22 +3,17 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
-  "type": "commonjs",
+  "type": "commonjs",{
   "scripts": {
-    "dev": "vercel dev",
-    "build": "echo 'Build step can be defined here if needed'",
     "start": "node server.js"
-  },
+  }
+  }
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "chrome-aws-lambda": "^10.1.0",
     "puppeteer-core": "^10.4.0",
-    "nodemon": "^3.1.7",
-    "puppeteer": "^23.6.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
     "express": "^4.21.1"
-  }
+  },
 }
