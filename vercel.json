@@ -1,27 +1,27 @@
 {
-    "version": 2,
-    "name": "project_deployment",
-    "builds": [
-        {
-            "src": "server.js",
-            "use": "@vercel/node",
-            "config": {
-                "nodeVersion": "20.x"
-            }
-        }
-    ],
-    "env": {
-        "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD": "true",
-        "PLAYWRIGHT_BROWSERS_PATH": "0"
+  "version": 2,
+  "name": "project_deployment",
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node",
+      "config": {
+        "nodeVersion": "20.x"
+      }
+    }
+  ],
+  "env": {
+    "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD": "true"
+  },
+  "routes": [
+    {
+      "src": "/fetch-html",
+      "dest": "/server.js"
     },
-    "routes": [
-        {
-            "src": "/fetch-html",
-            "dest": "/server.js"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "/server.js"
-        }
-    ]
+    {
+      "src": "/(.*)",
+      "dest": "/server.js"
+    }
+  ],
+  "installCommand": "npm install && npx playwright install"
 }
