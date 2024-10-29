@@ -1,6 +1,6 @@
 import express from 'express';
 import puppeteer from 'puppeteer-core';
-import chrome from 'chrome-aws-lambda';
+import chromium from '@sparticuz/chromium';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -8,25 +8,21 @@ const PORT = process.env.PORT || 3000;
 app.get('/fetch-html', async (req, res) => {
     let browser = null;
     try {
-        // Puppeteer launch configuration with chrome-aws-lambda
+        // Launch Puppeteer with Sparticuz's Chromium path and args
         browser = await puppeteer.launch({
-            args: [...chrome.args, '--disable-gpu', '--no-sandbox', '--disable-setuid-sandbox'],
-            executablePath: await chrome.executablePath || '/usr/bin/chromium-browser',
-            headless: chrome.headless
+            args: chromium.args,
+            executablePath: await chromium.executablePath(),
+            headless: chromium.headless,
         });
-        
+
         const page = await browser.newPage();
         await page.goto('https://s3taku.com/download?id=MjM2MTM2&typesub=Gogoanime-SUB&title=Tasuuketsu+Episode+16', {
-            waitUntil: 'networkidle2'
+            waitUntil: 'networkidle2',
         });
 
-        // Wait for 5 seconds
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        await page.waitForTimeout(5000); // Wait for 5 seconds
 
-        // Get the page content
         const content = await page.content();
-
-        // Send content as JSON response
         res.json({ content });
     } catch (error) {
         console.error("Error:", error);
