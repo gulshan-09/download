@@ -4,13 +4,15 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "dev": "vercel dev"
+    "dev": "vercel dev",
+    "build": "echo 'Build step can be defined here if needed'",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "chrome-aws-lambda": "^3.2.0",
+    "puppeteer": "^23.6.0",  // Add this if you're using Puppeteer directly
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1"
