@@ -1,68 +1,24 @@
+// api/fetch-html.js
+const puppeteer = require('puppeteer');
 const express = require('express');
-const cors = require('cors');
-const chromium = require('chrome-aws-lambda'); // Change this to chrome-aws-lambda
-require("dotenv").config();
-
 const app = express();
-const PORT = process.env.PORT || 5001;
 
-app.use(cors());
-app.use(express.json());
-
-app.get("/", (req, res) => {
-    res.status(200).json("It's working.😉😎");
-}); 
-
-async function fetchHtmlContent(url) {
-    const browser = await chromium.puppeteer.launch({
-        args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox'],
-        defaultViewport: chromium.defaultViewport,
-        headless: true,
-    });
-
-    const page = await browser.newPage();
+app.get('/fetch-html', async (req, res) => {
     try {
-        await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
-        await page.waitForSelector('.mirror_link', { timeout: 15000 });
+        const browser = await puppeteer.launch({ headless: 'new' });
+        const page = await browser.newPage();
+        await page.goto('https://s3taku.com/download?id=MjM2MTM2&typesub=Gogoanime-SUB&title=Tasuuketsu+Episode+16');
 
-        const downloadLinks = await page.evaluate(() => {
-            const links = {};
-            const downloadDivs = document.querySelectorAll('.mirror_link .dowload a');
+        // 5 seconds delay for page load
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        const content = await page.content();
 
-            downloadDivs.forEach(link => {
-                const qualityText = link.textContent.trim().replace(/Download\s*\((.*?)\s*-.*\)/, '$1');
-                const url = link.href;
-                links[qualityText] = url;
-            });
-
-            return links;
-        });
-
-        return downloadLinks;
-    } catch (error) {
-        console.error('Error during page processing:', error);
-        throw new Error('Failed to fetch content');
-    } finally {
         await browser.close();
-    }
-}
 
-app.get('/fetch-content', async (req, res) => {
-    const url = req.query.url;
-
-    if (!url) {
-        return res.status(400).send('URL is required');
-    }
-
-    try {
-        const htmlContent = await fetchHtmlContent(url);
-        res.status(200).json(htmlContent);
+        res.json({ content });
     } catch (error) {
-        console.error('Error fetching HTML:', error.message);
-        res.status(500).send('Error fetching HTML: ' + error.message);
+        res.status(500).json({ error: error.toString() });
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server started on port ${PORT}...`);
-});
+module.exports = app;
