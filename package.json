@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "dev": "vercel dev",
     "build": "echo 'Build step can be defined here if needed'",
