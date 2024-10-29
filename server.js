@@ -1,6 +1,7 @@
+// server.js
 const express = require('express');
 const cors = require('cors');
-const chromium = require('chrome-aws-lambda'); // Use chrome-aws-lambda
+const puppeteer = require('puppeteer');
 require("dotenv").config();
 
 const app = express();
@@ -14,14 +15,19 @@ app.get("/", (req, res) => {
 }); 
 
 async function fetchHtmlContent(url) {
-    const browser = await chromium.puppeteer.launch({
+    const browser = await puppeteer.launch({
         headless: true,
-        args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox'],
-        defaultViewport: chromium.defaultViewport,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
     const page = await browser.newPage();
     try {
+        // Test page loading with a simple example
+        await page.goto('https://example.com');
+        const title = await page.title();
+        console.log('Page title:', title); // Logs: Page title: Example Domain
+
+        // Now continue with your original URL logic
         await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
         await page.waitForSelector('.mirror_link', { timeout: 15000 });
 
@@ -46,7 +52,6 @@ async function fetchHtmlContent(url) {
         await browser.close();
     }
 }
-
 
 app.get('/fetch-content', async (req, res) => {
     const url = req.query.url;
