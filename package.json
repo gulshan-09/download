@@ -11,8 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "chrome-aws-lambda": "^10.1.0",
-    "@sparticuz/chromium": "^130.0.0",
+    "selenium-webdriver": "^4.25.0",
     "puppeteer-core": "^10.4.0",
     "express": "^4.21.1"
   }
