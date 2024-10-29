@@ -4,23 +4,24 @@ const { chromium } = require('playwright');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Middleware to handle CORS
 app.use((req, res, next) => {
-    // CORS headers
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET, POST");
     res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
     next();
 });
 
+// Fetch HTML route
 app.get('/fetch-html', async (req, res) => {
     const url = 'https://s3taku.com/download?id=MjM2MTM2&typesub=Gogoanime-SUB&title=Tasuuketsu+Episode+16';
     let browser;
 
     try {
-        // Launch a headless browser
+        // Launch a headless browser with additional arguments
         browser = await chromium.launch({
-            headless: true, // Set to false if you want to see the browser
-            args: ['--no-sandbox', '--disable-setuid-sandbox'] // Add args for compatibility if needed
+            headless: true, // Run in headless mode
+            args: ['--no-sandbox', '--disable-setuid-sandbox'] // Necessary args for serverless environments
         });
 
         const page = await browser.newPage();
@@ -34,7 +35,7 @@ app.get('/fetch-html', async (req, res) => {
         }
 
         // Optional: wait for additional content to load (if necessary)
-        await page.waitForTimeout(5000); // Using waitForTimeout instead of a Promise
+        await page.waitForTimeout(5000); // Adjust the timeout as necessary
 
         // Get the full HTML content
         const content = await page.content();
@@ -49,6 +50,7 @@ app.get('/fetch-html', async (req, res) => {
     }
 });
 
+// Start the server
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
