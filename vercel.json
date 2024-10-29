@@ -6,13 +6,13 @@
             "src": "server.js",
             "use": "@vercel/node",
             "config": {
-                "nodeVersion": "18.x"
+                "nodeVersion": "20.x"
             }
         }
     ],
     "env": {
         "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD": "true",
-        "AWS_LAMBDA_JS_RUNTIME": "nodejs18.x" 
+        "AWS_LAMBDA_JS_RUNTIME": "nodejs20.x" 
     },
     "routes": [
         {
