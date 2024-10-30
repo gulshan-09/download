@@ -1,27 +1,25 @@
 {
-  "version": 2,
-  "name": "project_deployment",
-  "builds": [
-    {
-      "src": "server.js",
-      "use": "@vercel/node",
-      "config": {
-        "nodeVersion": "20.x"
-      }
-    }
-  ],
-  "env": {
-    "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD": "true"
-  },
-  "routes": [
-    {
-      "src": "/fetch-html",
-      "dest": "/server.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/server.js"
-    }
-  ],
-  "installCommand": "npm install && npx playwright install"
+    "version": 2,
+    "name": "progect_deployment",
+    "builds": [
+        {
+            "src": "server.js",
+            "use": "@vercel/node"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/proxy-download",
+            "dest": "/server.js",
+            "headers": {
+                "Access-Control-Allow-Origin": "https://anikoto.fun",
+                "Access-Control-Allow-Methods": "GET, POST",
+                "Access-Control-Allow-Headers": "Content-Type, Authorization"
+            }
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/server.js"
+        }
+    ]
 }
