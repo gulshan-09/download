@@ -5,21 +5,22 @@ const app = express();
 const PORT = 3000;
 
 // Set up CORS to allow requests from your specific origin
-app.use(cors());
+app.use(cors({
+    origin: 'https://anikoto.fun', // Replace with your client domain
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
-app.use((req, res, next) => {
-    // CORS headers
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "GET, POST");
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    next();
-});
-
-// Endpoint to handle the proxy request
+// Proxy endpoint to handle the request
 app.post('/proxy-download', async (req, res) => {
+    // Set CORS headers explicitly for this endpoint
+    res.setHeader("Access-Control-Allow-Origin", "https://anikoto.fun"); // Set to your domain
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
     const { captcha_v3, id } = req.body;
 
     try {
